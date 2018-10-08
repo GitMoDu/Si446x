@@ -388,7 +388,8 @@ static void clearFIFO(void)
 	doAPI((uint8_t*)clearFifo, sizeof(clearFifo), NULL, 0);
 }
 
-/*
+
+#ifdef #define SI446X_ENABLE_RX_INVALID_SYNC
 // Sometimes the Si446x gets all messed up if it receives a bad packet, so we have to enable the INVALID SYNC interrupt when
 // a new packet starts coming in. If the INVALID SYNC interrupt is triggered then RX mode is restarted. The interrupt is turned off again
 // if the packet is successfully received.
@@ -402,7 +403,6 @@ void __attribute__((weak)) SI446X_CB_RXINVALIDSYNC(void)
 	
 	// TODO turn off interrupt?
 }
-*/
 
 // TODO use Si446x_setupCallback instead?
 /*static void fix_invalidSync_irq(uint8_t enable)
@@ -413,6 +413,9 @@ void __attribute__((weak)) SI446X_CB_RXINVALIDSYNC(void)
 	setProperty(SI446X_INT_CTL_MODEM_ENABLE, data);
 }
 */
+#endif
+
+
 // Read pending interrupts
 // Reading interrupts will also clear them
 // Buff should either be NULL (just clear interrupts) or a buffer of atleast 8 bytes for storing statuses
@@ -956,21 +959,26 @@ ISR(INT_VECTOR)
 	if(interrupts[4] & (1<<SI446X_SYNC_DETECT_PEND))
 	{
 		//fix_invalidSync_irq(1);
-//		Si446x_setupCallback(SI446X_CBS_INVALIDSYNC, 1); // Enable INVALID_SYNC when a new packet starts, sometimes a corrupted packet will mess the radio up
+#ifdef SI446X_ENABLE_RX_INVALID_SYNC
+		Si446x_setupCallback(SI446X_CBS_INVALIDSYNC, 1); // Enable INVALID_SYNC when a new packet starts, sometimes a corrupted packet will mess the radio up
+#endif
 		SI446X_CB_RXBEGIN(getLatchedRSSI());
 	}
-/*
+
+#ifdef SI446X_ENABLE_RX_INVALID_SYNC
 	// Disable INVALID_SYNC
-	if((interrupts[4] & (1<<SI446X_INVALID_SYNC_PEND)) || (interrupts[2] & ((1<<SI446X_PACKET_SENT_PEND)|(1<<SI446X_CRC_ERROR_PEND))))
+	if ((interrupts[4] & (1 << SI446X_INVALID_SYNC_PEND)) || (interrupts[2] & ((1 << SI446X_PACKET_SENT_PEND) | (1 << SI446X_CRC_ERROR_PEND))))
 	{
 		//fix_invalidSync_irq(0);
 		Si446x_setupCallback(SI446X_CBS_INVALIDSYNC, 0);
 	}
-*/
+#endif
 
+#ifdef SI446X_ENABLE_RX_INVALID_SYNC
 	// INVALID_SYNC detected, sometimes the radio gets messed up in this state and requires a RX restart
-//	if(interrupts[4] & (1<<SI446X_INVALID_SYNC_PEND))
-//		SI446X_CB_RXINVALIDSYNC();
+	if(interrupts[4] & (1<<SI446X_INVALID_SYNC_PEND))
+		SI446X_CB_RXINVALIDSYNC();
+#endif
 
 #if SI446X_ENABLE_ADDRMATCHING
 	// Address match success

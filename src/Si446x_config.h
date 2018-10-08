@@ -45,6 +45,13 @@
 #define SI446X_FIXED_LENGTH 0
 
 
+// Sometimes the Si446x gets all messed up if it receives a bad packet, so we have to enable the INVALID SYNC interrupt when
+// a new packet starts coming in. If the INVALID SYNC interrupt is triggered then RX mode is restarted. The interrupt is turned off again
+// if the packet is successfully received.
+// Disabled by default.
+#define SI446X_ENABLE_RX_INVALID_SYNC
+
+
 ///////////////////
 // Pin stuff
 ///////////////////

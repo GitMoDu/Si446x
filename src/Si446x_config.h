@@ -50,9 +50,15 @@
 ///////////////////
 
 // Arduino pin assignments
-#define SI446X_CSN			10
-#define SI446X_SDN			5
-#define SI446X_IRQ			2 // This needs to be an interrupt pin
+#if defined(ARDUINO_ARCH_AVR)
+#define SI446X_CSN			10	//Chip Select Pin
+#define SI446X_SDN			5	//Reset Pin.
+#define SI446X_IRQ			2	// This needs to be an interrupt pin
+#elif defined(ARDUINO_ARCH_STM32F1)
+#define SI446X_CSN			PA4	//Chip Select Pin
+#define SI446X_SDN			PB5	//Reset Pin.
+#define SI446X_IRQ			PB4	// This needs to be an interrupt pin
+#endif
 
 
 

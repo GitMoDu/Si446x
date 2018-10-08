@@ -1,3 +1,9 @@
+Fork for use with extra features.
+
+
+Original: https://github.com/zkemble/Si446x
+
+
 Si4463 Radio Library for AVR and Arduino
 ========================================
 

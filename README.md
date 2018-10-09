@@ -31,13 +31,7 @@ to the top of the sketches that use the library.
 Also have a look at Si446x_config.h, that's where you can change which pins are used and stuff.
 
 ### AVR
-Copy the `./Si446x` folder to your project and add
-
-    #include "Si446x/Si446x.h"
-
-to the source files that use the library.
-
-Check out the examples in the examples folder.
+No included in this fork.
 
 ---
 
